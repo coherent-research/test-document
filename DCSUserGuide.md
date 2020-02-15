@@ -51,6 +51,8 @@ if desired and reset their password if they have forgotten it. When a
 password is reset a new one will be sent automatically to the email
 address registered for the user.    
 
+Users may also use credentials from another authenticatin provider via a Single-Sign-On system if DCS were configured to do so. This could be instead of a user name and password from DCS, or even the use of both methods interchangeably.
+
 # Managing Meters and Virtual Meters
 ## Overview        
 It is possible to partition meters logically into a hierarchy of Groups. The hierarchy can be considered as a tree and meters are only assigned to the leaves of the tree. Meters can be moved from one group to another without effect.
@@ -230,11 +232,11 @@ The ternary operator allows for conditional processing of a reading and takes th
 ```text
 CONDITION ? VALUE_IF_TRUE : VALUE_IF_FALSE
 ```  
-where CONDITION must be a logical comparison such as ELECT == 0 or ELECT >= 1 
-and VALUE_IF_TRUE and VALUE_IF_FALSE are numeric values.
+where `CONDITION` must be a logical comparison such as `ELECT == 0 or ELECT >= 1` 
+and `VALUE_IF_TRUE` and `VALUE_IF_FALSE` are expressions resulting in numeric values.
 
 The comparision operators are: == (equals), &gt; (greater than), &gt;= (greater than or equal to), &lt; (less than), &lt;= (less than or equal to).
-Logical operators can also be used in a CONDITION. The logical operators are &amp;&amp; (and) and || (or).
+Logical operators can also be used in a `CONDITION`. The logical operators are &amp;&amp; (and) and || (or).
 
 Examples:
 
@@ -283,13 +285,13 @@ Metered data for meters and virtual meters can be viewed or downloaded in a vari
 
 There are a number of options that are used when displaying readings data that can be set in the **Options** panel
 
-Field | Description | Chart/Table
-------|-------------|------------
-Source | Identifies the source of the metered data to be viewed. The source can be Automatic (i.e. the normal data collected automatically by DCS), Manual (i.e. the Interpolated data derived purely from Manual Readings) and Merged. When Merged is selected metered data consists of the Automatic metered data (calibrated) with any gaps filled in by linear interpolation OR the interpolated manual reading value which ever interpolation has the least uncertainty. On charts readings derived from either type of interpolated reading are shown with a pale green background. | Both
-Calibrated | This is only available when the Source is Automatic. When selected the metered data is shown with the totals adjusted using the Calibration Readings for the register. When not selected the readings are shown without the adjustment. | Table
-Interpolated | This is only available when the Source is Automatic. When selected any missing gaps in the metered data will be filled in using linear interpolation (on charts interpolated readings are shown with a pale green background). If not selected missing readings will not be displayed (on charts missing readings are shown with a pale red background). | Both
-Time zone | The readings are normally shown in Standard Time (i.e. GMT in the UK) but it is also possible to display the readings in local time (which takes into account BST). | Both
-Decimals | The number of decimal places the readings will be rounded to when displayed | Table
+Field | Description
+------|------------
+Source | Identifies the source of the metered data to be viewed. The source can be Automatic (i.e. the normal data collected automatically by DCS), Manual (i.e. the Interpolated data derived purely from Manual Readings) and Merged. When Merged is selected metered data consists of the Automatic metered data (calibrated) with any gaps filled in by linear interpolation OR the interpolated manual reading value which ever interpolation has the least uncertainty. On charts readings derived from either type of interpolated reading are shown with a pale green background.
+Calibrated | This is only available when the Source is Automatic. When selected the metered data is shown with the totals adjusted using the Calibration Readings for the register. When not selected the readings are shown without the adjustment.
+Interpolated | This is only available when the Source is Automatic. When selected any missing gaps in the metered data will be filled in using linear interpolation (on charts interpolated readings are shown with a pale green background). If not selected missing readings will not be displayed (on charts missing readings are shown with a pale red background).
+Time zone | The readings are normally shown in Standard Time (i.e. GMT in the UK) but it is also possible to display the readings in local time (which takes into account BST).
+Decimals | The number of decimal places the readings will be rounded to when displayed (Only applicable to Tables)
 
 The data currently being displayed can always be refreshed from the server by clicking the **Refresh from server** button. This is useful if the data may have changed due to, e.g. the meter being read in the background.
 
@@ -653,30 +655,29 @@ Address | See below
 Metered data plugin | If the meter type corresponds to an intelligent meter then select the Metered Data Plugin from the drop down list (see the chapter on **Metered Data Plugins** for more information on supported plugins.) If the meter type corresponds to an IDC pulse input, radio input and Modbus meter this field should be left as **None**.
 Scale factor | A number which every reading will be multiplied by before it is stored in the database.
 Unit | Unit for the readings.
-Is instantaneous | Specifies whether the register is recording an instantaneous quantity (e.g. W) or a cumulative quantity (e.g. Wh).       
+Is instantaneous | Specifies whether the register is recording an instantaneous quantity (e.g. W) or a cumulative quantity (e.g. KWh).
+
+> An instantaneous Register will store values recorded at the given time (e.g. W), while a non-instantaneous or standard Register will assume this is a cumulative quantity (e.g. KWh) and also give a "Period Value" being the difference between this reading and the next representing the accumulated total for the given period.
 
 **Address format for IDC Inputs:**
 
 - Pulse Input: The address is always 0
 - For Radio Inputs: The address is always 0
-- For Modbus meters: The address is made up as follows: R-T-L-E where R is the Modbus register address (see relevant meter documentation), T is the
-type of register which can be 3 for a Holding Register or 4 for an Input Register, L is the length in 16 bit words (valid values are 1, 2, 3 and 4 for 16, 32, 48 and 64 bit quantities), and E is the encoding which
-is shown below. Note that not all combinations of length and encoding are supported. Refer to the relevant meter documentation for register formats.
- - For meters that use a plugin, the address is used by the Meter Plugin to address the register within the meter and its meaning is specific to the plugin.
+- For Modbus meters: The address is the Modbus register address and these additional parameters must be configured (see relevant meter documentation):
+ - The type of register which can be Holding Register or an Input Register
+  - The length in 16 bit words (valid values are 16, 32, 48 and 64 bit word sizes)
+  - The encoding which is shown below. Note that not all combinations of length and encoding are supported. Refer to the relevant meter documentation for register formats.
+- For meters that use a plugin, the address is used by the Meter Plugin to address the register within the meter and its meaning is specific to the plugin.
  
 **Modbus register encoding**
 
-- 0: Unsigned int 
-- 1: Signed int (2s complement) 
-- 2: Signed int (sign/magnitude)
-- 3: Floating Point (32 bit only)
-- 4: Unsigned int - Little endian (&gt;= 32 bits only)
-- 5: Signed int (2s complement) - Little endian (&gt;= 32 bits only)
-- 6: Signed int (sign/magnitude) - Little endian (&gt;= 32 bits only)
-- 7: Floating Point - Little endian (32 bit only)
-- 8: Unsigned integer (Modulo-10000): Little endian
-- 9: Unsigned integer (Modulo-10000): Big endian
-- 10: Unsigned integer (YST format)
+- Unsigned integer: Big/Little endian
+- Unsigned integer (Modulo-10000): Big/Little endian
+- Unsigned integer (YST format)
+- Signed integer (2s complement): Big/Little endian
+- Signed integer (sign/magnitude): Big/Little endian
+- Floating Point to IEEE 754 (32 bit only): Big/Little endian
+- Binary-coded decimal (BCD)
         
 ## Removing a Register Type from a Meter Type
 - Delete a register type by using the action menu on the right of the table row and clicking **Delete register type**.
@@ -708,8 +709,9 @@ It is possible to partition IDCs logically into a hierarchy of groups in exactly
 IDCs are automatically added to DCS when they first connect. One IDC Group will be defined as the default group and IDCs will automatically be assigned to that group (see chapter </a><a href="#MI4D">Managing IDC Groups</a>).
 
 ## Viewing IDC status
-- Select the IDC and open the ***Device Info** tab. This will show information about the IDC device and its current status. 
+- Select the IDC and open the **Device Info** tab. This will show information about the IDC device and its current status. 
 - The status can be updated by clicking the  **Refresh** button.
+- The user may store information as Notes which, when added or edited, can be saved with the **Save** button. These notes do not effect the use of the IDCs in any way and can be modified even if the IDC is offline.
         
 ## Reading the IDC settings
 It is possible to read the settings stored in the IDC device itself and modify these if required.
@@ -721,7 +723,7 @@ It is possible to read the settings stored in the IDC device itself and modify t
 - Read the IDC **Settings** and modify them as required according to the table below. 
 - Click the **Write to IDC** button to write the settings back to the remote device. 
 
-> Note that this result in the IDC device being reset. This sets up a communications session with the remote device to read the settings and may take a few seconds. Also, be aware that if there is already a session in progress to the IDC to, e.g., read a meter it will not be possible to read the settings.
+> Note that this result in the IDC device being rebooted. This sets up a communications session with the remote device to read the settings and may take a few seconds. Also, be aware that if there is already a session in progress to the IDC to, e.g., read a meter it will not be possible to read or write the settings until this is completed.
         
 Field | Description
 ------|------------ 
@@ -895,7 +897,7 @@ click the **Refresh** button to update the current status.
 ## Application settings
 A number of application settings can be used to modify the behaviour of the Queued Interrogation function in the DCService.exe.config file:
 
-Setting name | Meaning | Default value
+Setting name | Meaning | Default value 
 --|--|--|--
 QueuedInterrogationDialupMaxRetryCount | Number of retries that will be attempted if a dial up queued interrogation fails. | 2 
 QueuedInterrogationTcpMaxRetryCount | Number of retries that will be attempted if a TCP/IP queued interrogation fails. | 2 
@@ -1080,7 +1082,7 @@ A user has an associated role: guest, viewer, operator or administrator.
 Role | Capabilities | Usage
 -----|--------------|------
 Administrator | Adminstrator are permitted to perform all tasks in DCS | Limit the number of Administrators to a small number of trusted, capable users.
-Operators | An operator can create, edit and delete meters, virtual meters or groups and manage IDCs unless they are restricted to certain groups by an administrator (see[User Restricted Groups](#user-restricted-groups)). An operator may view Meter Types but not create, delete or modify them. They may not view the **Admins** page. They may also view and create their own reports and view all public reports. | This role is designed for users who will use all aspects of the system be may be restricted to certain groups of meters or IDCs.
+Operators | An operator can create, edit and delete meters, virtual meters or groups and manage IDCs unless they are restricted to certain groups by an administrator (see [User Restricted Groups](#user-restricted-groups)). An operator may view Meter Types but not create, delete or modify them. They may not view the **Admins** page. They may also view and create their own reports and view all public reports. | This role is designed for users who will use all aspects of the system be may be restricted to certain groups of meters or IDCs.
 Viewer | The viewer may view virtually all parts of the system but they have stricly read only access. Viewers can not create, edit and delete meters, virtual meters or groups. Viewers can be restricted to certain groups by an administrator (see [User Restricted Groups](#user-restricted-groups)). Viewer may view but not edit Meter Types, IDCs and Administration functions with the exception of the Users table. They may also view and create their own reports and view all public reports. | This role is usually just used for demonstation purposes.
 Guest | Guests are essentially only allowed to view Metered Data. They can view any of the groups, meters (meter passwords and remote addresses will be hidden) or virtual meters unless they are restricted to certain groups by an administrator (see [User Restricted Groups](#user-restricted-groups)); however they may not create, modify or delete any of them. They may not interrogate meters or import any data. They can not interact with IDCs, view the event log or access any administrative funtions. They may view and create their own reports and view all public reports. | Use this role if the user needs to be restricted to a subset of meters and should only be authorised to view Metered Data  
 
@@ -1098,6 +1100,8 @@ Field | Description
 User name | A unique string which may only be made up of the following characters: a..z, A..Z, 0..9, -, ., _, @, +, and *SPACE*.
 Role | Administrator, Operator, Viewer, Guest
 Email | The user's email address
+SSO Identity | Optional field for the user's fully qualified identity on the external Single-Sign-On provider if available.
+Enforce SSO | If an SSO Identity is provided, ticking this box will cause DCS to exclusively use this method to authenticate the user, i.e. the user must use SSO to login and will not be able to use a user name and password from DCS.
 Expiration | An optional future date that can be used to specify an expiration date for the account. Once this date has passed the user will not be able to sign in. Normally this field should be empty.
 Data access start | An optional date that can be used to specify the start of a date range for which the user can view metered data. Normally this field should be empty.
 Data access start | An optional date that can be used to specify the end of a date range for which the user can view metered data. Normally this field should be empty.
@@ -1896,7 +1900,7 @@ N { DAY[S] | WEEK[S] | MONTH[S} | YEAR[S] }
 Examples of using StartDate, EndDate and Span:
 
 
-|   | A | B | C | 
+|   | A | B | C | Meaning 
 |---|---|---|---|---
 | 1 | StartDate | Span | EndDate | Corresponding date range
 | 2 | YESTERDAY | 1 DAY | | Yesterday
