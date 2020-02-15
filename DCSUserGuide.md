@@ -203,8 +203,7 @@ Field | Description
 ------|------------            
 Name | A human readable name for the Virtual Meter. It should be something concise and obvious, e.g. Main Building Electricity.
 Description | Any text to describe the Virtual Meter further.
-Expression | The mathematical function to define the time series data. This is expressed as a mathematical function of meter registers. Each meter register will be specified as a register variable which can be any 
-alphanumeric string without spaces. See below for more details.
+Expression | The mathematical function to define the time series data. This is expressed as a mathematical function of meter registers. Each meter register will be specified as a register variable which can be any alphanumeric string without spaces. See below for more details.
 Unit | The unit for the calculated data.
 Instantaneous | Specifies whether the virtual meter contains  instantaneous quantity (e.g. W) or a cumulative quantity (e.g. Wh).
 Decimal places | The number of significant decimal places for the calculated data. The value can be any integer &gt;= 0.
