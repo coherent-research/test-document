@@ -41,8 +41,7 @@ Set-Cookie: COHERENT-DCSV3 ...
 
 {
   "username": "user",
-  "role": "Operator",
-  "appVersion": "3.0.0"
+  "role": "Operator"
 }
 ```
 
@@ -247,7 +246,7 @@ An array of objects with the following properties
 
 Property | Value | Note
 ---------|-------|------
-startTime | Start of period timestamp |
+startTime | Start of period timestamp in the form yyy-MM-ddTHH:MM:SSZ (or Z replaced with a timezone offset in the form +HH:MM) |
 duration | Period length in minutes | Corresponds to intergrationPeriod in query
 totalValue | Register total at startTime | 
 periodValue | Consumption for the period | If the register is instantaneous this will always be 0
@@ -314,7 +313,7 @@ An array of objects with the following properties
 
 Property | Value | Note
 ---------|-------|------
-startTime | Start of period timestamp |
+startTime | Start of period timestamp in the form yyy-MM-ddTHH:MM:SSZ (or Z replaced with a timezone offset in the form +HH:MM) |
 duration | Period length in minutes | Corresponds to intergrationPeriod in query
 totalValue | Total at startTime | Note that this is always 0 for virtual meters
 periodValue | Consumption for the period | If the virtual meter is instantaneous this will always be 0
