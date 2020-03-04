@@ -1,5 +1,7 @@
 # Introduction
-The Coherent Research Data Collection Server (DCS) consists of four logical components: the actual server itself which runs as a Windows service (DCService), SQL Server with the DCS schema defined (DCS DB), a Web Application to configure the server and view the collected data (DCSWebApp) and a Web Services interface (DCSWebServices) to allow IDCs to communicate with it. This document discusses how to use the DCSWebApp. For more information on installing the components refer to the DCS Installation guide.
+The Coherent Research Data Collection Server (DCS) consists of four logical components: the actual server itself which runs as a Windows service (DCService), SQL Server with the DCS schema defined (DCS DB), a Web Application to configure the server and view the collected data (DCSWebApp) and a Web Services interface (DCSWebServices) to allow IDCs to communicate with it. This document discusses how to use the DCSWebApp. For more information on installing the components refer to the 
+DCS Installation Guide on the Coherent Research Support website
+<a href="https://www.coherent-research.co.uk/support/extras/DcsInstallationGuide/" target="_blank">(go to DCS Installation Guide at Coherent Support)</a>.
 # Concepts
 A *Meter* in DCS is an abstraction of an
 individual physical entity from
@@ -942,7 +944,6 @@ A tariff is used to determine how to calculate the cost associated with a set of
 
 ## Adding a Tariff
 - Click the **Add new tariff** button at the top right hand of the tariff table which will display an empty tariff settings form.
-- Click on the **New** button. 
 - Enter the fields according to the table below.
 - Click **Save**. 
 
@@ -959,7 +960,8 @@ Field | Description
 ------|------------ 
 Name |  A short human readable name, e.g. Day or Night.
 Start time | The time of day (GMT) the band starts in the format HH:MM (in 24hr time).
-Cost per unit | The cost (in pounds and pence) per unit.        
+Unit cose | The cost (in pounds and pence) per unit.        
+Day of week | The days of the week the tariff is valid for. This can be used to have, e.g., different tariffs on the weekends as opposed to weekdays.
 
 > Note that the end time for a tariff time band is always considered the start of the next time band (in start time order). This means that no 2 tariff time bands can have the same start time. The cost per unit can be in fractions of pence, e.g. if a supplier charges 12.34 p/kWh this can be enterd as 0.1234. Tariff time band names do not need to be unique within a tariff. Repeated time bands will be aggregated when creating the billing data. This allows rates to be split during the day. 
 
@@ -998,7 +1000,6 @@ provide some limitation such as the number of serial ports it can handle).
 
 ## Adding a Modem
 - Click the **Add new modem** button at the top right hand of the modem table which will display an empty modem settings form.
-- Click on the **New** button. 
 - Enter the fields according to the table below.
 - Click **Save**. 
 
@@ -1033,7 +1034,6 @@ When installed, DCS has a default Collection Schedule defined which will most li
 
 ## Adding a Collection Schedule
 - Click the **Add new collection schedule** button at the top right hand of the collection schedule table which will display an empty collection schedule settings form.
-- Click on the **New** button. 
 - Enter the fields according to the table below.
 - Click **Save**. 
 
@@ -1062,7 +1062,6 @@ All meter registers and virtual meters can have a unit specified. In DCS a unit 
 
 ## Adding a Unit
 - Click the **Add new unit** button at the top right hand of the unittable which will display an empty settings form. 
-- Click on the **New** button. 
 - Enter the unit name.
 - Click **Save**. 
        
@@ -1090,8 +1089,7 @@ Guest | Guests are essentially only allowed to view Metered Data. They can view 
 - Select **Admin > User admin** in the main navigation bar and then open the **User accounts** panel to display a table of all users.
 
 ## Adding a User
-- Click the **Add new collection schedule** button at the top right hand of the collection schedule table which will display an empty collection schedule settings form.
-- Click on the **New** button. 
+- Click the **Add new user** button at the top right hand of the user table which will display an empty user settings form.
 - Enter the fields according to the table below.
 - Click **Save**. 
 
@@ -1139,7 +1137,6 @@ A Meter Restriction Profile can be created which has the default access set to  
 
 ### Adding Meter Restriction Profiles
 - Click the **Add new meter restriction profile** button at the top right hand of the table which will display an empty settings form.
-- Click on the **New** button. 
 - Enter the fields according to the table below.
 - To add new meter group, meters and/or virtual meters to the profile click the **Add profile item** button and set the access as required.
 - Click **Save**. 
@@ -1176,7 +1173,6 @@ A IDC Restriction Profile can be created which has the default access set to  **
 
 ### Adding IDC Restriction Profiles
 - Click the **Add new IDC restriction profile** button at the top right hand of the table which will display an empty settings form.
-- Click on the **New** button. 
 - Enter the fields according to the table below.
 - To add new IDC group to the profile click the **Add profile item** button and set the access as required.
 - Click **Save**. 
@@ -1824,8 +1820,12 @@ Column | Position | Description
 ID | A1 | The ID of the register or virtual meter in the form Rx or VMx where x is an integer, e.g. to specify the register with ID 99 this column would contain R99, to specify the virtual meter with ID 27 this column would contain VM27.
 LowerLimit | B1 | A numerical value representing the lower limit that the daily total must be equal to or greater than for the specified register or virtual meter. This column may be left empty, in which case there is no lower limit.
 UpperLimit | C1 | A numerical value representing the upper limit that the daily total must be equal to or less than for the specified register or virtual meter. This column may be left empty, in which case there is no upper limit.
+DoW Filter | D1 | Optional column. If the Day of Week Filter exists the daily total is calcuated only for days that correspond to the filter. The filter format consist of a 7 character string with each position representing a day of the week starting with Monday. To include a day of the week the corresponding position must contain the first character of the day, to exclude a day of the week the corresponding position must contain a character other than the first character of the day. E.g. 'xTWxxxx' would include Tuesday and Wednesday, '.TWTF..' would include Tuesday, Wednesday, Thursday and Friday, etc. Special "shorthand strings" Weekdays, Weekends exist. A non-existent or blank DoW Filter means all days of the week. Beware if using '.' as the "don't include character" as Excel may convert 3 dots into an ellipsis which will give a format error when processing the file. 
+ToD Filter | E1 | Optional column. If the Time of Day Filter exists only readings that correspond to the filter will be included in the daily total. The filter format consists of a comma separated list of included time ranges in the format HH:mm-HH:mm. The start of the day is 00:00 and end of the day is 00:00. E.g. '09:00-17:00' means 9am to 5pm, and '00:00-09:00, 17:00-00:00' means all times except 9am to 5pm. Note that resolution is 30 minutes so time ranges like 09:45-10:51 are not supported.
+
+> A CSV file (with type "csv") can also be used to specifiy the input for this report. If using the ToD Filter in a CSV file a semicolon separated list of included time ranges should be used instead of a comma separated list.
         
-An example would be:
+An simple example would be:
         
 |   | A | B | C
 |---|---|---|---
@@ -1833,6 +1833,20 @@ An example would be:
 | 2 | R10 | 100 | 1000
 | 3 | VM10 | 100 | | 
 | 4 | VM12 | | 999
+
+An example with Day of Week and Time of Day filters would be:
+
+|   | A | B | C | D | E
+|---|---|---|---|---|---
+| 1 | ID | LowerLimit | UpperLimit | DoWFilter | ToDFilter
+| 2 | R10 | 100 | 1000 | MTWTFxx | |
+| 3 | VM10 | 100 | 2000 | MTWTFxx | 00:00-09:00, 17:00-00:00
+| 4 | VM10 | 100 | 500 | MTWTFxx | 09:00-17:00
+| 5 | VM10 | 100 | 100 | xxxxxSS | 00:00-09:00, 17:00-00:00
+| 6 | VM10 | 100 | 500 | xxxxxSS | 09:00-17:00
+| 7 | VM12 | 10 | 999 | WEEKENDS | 
+| 8 | VM12 | 10 | 999 | WEEKDAYS | 00:00-09:00, 17:00-00:00
+
 
 ## Daily Usage Report        
 The Daily Usage Report will show the daily total usage (i.e. the sum of all period values) for any included registers.
@@ -1966,7 +1980,7 @@ Column | Position | Description
 DcsId | A1 | The ID of the register or virtual meter in the form Rx/VMx where x is an integer,  e.g. to specify the register with ID 99 this column would contain R99.
 Current Window | B1 | Date window size in units of the report frequency (i.e. Days for daily report, Weeks for weekly report). Current refers to the most recent window, i.e. the subject of the report.
 Previous Window | C1 | Date window size in units of the report frequency (i.e. Days for daily report, Weeks for weekly report).  Previous refers to the window that the current window will be compared against.
-DoW Filter | D1 | Optional column. The Day of Wweek Filter filters out days from each window that don't correspond. The filter format consist of a 7 character string with each position representing a day of the week starting with Monday. To include a day of the week the corresponding position must contain the first character of the day, to exclude a day of the week the corresponding position must contain a character other than the first character of the day. E.g. 'xTWxxxx' would be every Tuesday and Wednesday, '.TWTF..' would be every Tuesday, Wednesday, Thursday and Friday, etc. Special "shorthand strings" Weekdays, Weekends exist. A non-existent or blank DoW Filter means all days of the week. Beware if using '.' as the "don't include character" as Excel may convert 3 dots into an ellipsis which will give a format error when processing the file. 
+DoW Filter | D1 | Optional column. The Day of Week Filter filters out days from each window that don't correspond. The filter format consist of a 7 character string with each position representing a day of the week starting with Monday. To include a day of the week the corresponding position must contain the first character of the day, to exclude a day of the week the corresponding position must contain a character other than the first character of the day. E.g. 'xTWxxxx' would be every Tuesday and Wednesday, '.TWTF..' would be every Tuesday, Wednesday, Thursday and Friday, etc. Special "shorthand strings" Weekdays, Weekends exist. A non-existent or blank DoW Filter means all days of the week. Beware if using '.' as the "don't include character" as Excel may convert 3 dots into an ellipsis which will give a format error when processing the file. 
 ToD Filter | E1 | Optional column. The Time of Day Filter filters out hours in the day from each window that don't match. The filter format consists of a comma separated list of included time ranges in the format HH:mm-HH:mm. The start of the day is 00:00 and end of the day is 00:00. E.g. '09:00-17:00' means 9am to 5pm, and '00:00-09:00, 17:00-00:00' means all times except 9am to 5pm. Note that resolution is 30 minutes so time ranges like 09:45-10:51 are not supported.
 Offset | F1 | The gap between the current and previous windows in units of the report frequency..
 Lower Threshold | G1 | The maximum amount that the current average is expected to be below the previous average. The threshold may be an absolution number or a percentage.
